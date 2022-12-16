@@ -207,7 +207,7 @@ import LTree
 import Rose hiding (g)
 import Probability
 import Data.List hiding (find)
-import Data.List.Split hiding (split,chunksOf) 
+-- import Data.List.Split hiding (split,chunksOf) 
 import Svg hiding (for,wrap)
 import Control.Concurrent
 import Cp2223data
@@ -1128,7 +1128,7 @@ Gene de |tax|:
 \begin{code}
 gene = undefined
 \end{code}
-Função de pós-processamento:
+Função de pós-processamento: 
 \begin{code}
 post = undefined
 \end{code}
@@ -1156,9 +1156,35 @@ cgene = undefined
 \end{code}
 Geração dos jogos da fase de grupos:
 \begin{code}
-pairup = undefined
 
-matchResult = undefined
+groupPt = ["Portugal", "South Korea", "Ghana", "Uruguay"]
+
+pairup :: Eq b => [b] -> [(b, b)]
+pairup [] = []
+pairup (x:xs) = aux2 x xs ++ pairup xs
+              
+aux a [] = []
+aux a (x:xs) = (a,x) : aux a xs
+
+pair a b = (a,b)
+
+aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
+
+exMatch = ("Portugal", "Morocco")
+
+matchFunc :: (Match -> Maybe Team)
+matchFunc exMatch = Just "Morocco"
+
+-- matchResult = undefined TODO make it pointfree
+matchResult :: (Match -> Maybe Team) -> Match -> [(Team, Int)]
+matchResult f m = let result = f m in 
+                      matchResultAux m result
+
+matchResultAux :: (Team, Team) -> Maybe Team -> [(Team, Int)]
+matchResultAux (t1, t2) Nothing = [(t1, 1), (t2, 1)]
+matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
+                                   else [(t1, 0), (t2, 3)]
+
 
 glt = undefined
 \end{code}
