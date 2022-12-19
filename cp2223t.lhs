@@ -617,8 +617,17 @@ Trabalho a fazer:
 \item	Definir uma alternativa à função genérica |consolidate| que seja um
 catamorfismo de listas:
 \begin{code}
+
+-- Yet to finish
 consolidate' :: (Eq a, Num b) => [(a, b)] -> [(a, b)]
-consolidate' = cataList cgene
+consolidate' = cataList (either (nil) (uncurry acrescPoints))
+
+-- acrescPoints :: (a,b) -> [(a,b)] -> [(a,b)]
+acrescPoints p = cataList (either (const [p]) ((uncurry (:)) . ((addPoints p))))
+
+addPoints :: (Eq a, Num b) => (a,b) -> (a,b) -> (a,b)
+addPoints (t1, i1) (t2, i2) = if t1 == t2 then (t1, i1+i2) else (t2,i2)
+
 \end{code}
 \item	Definir a função |matchResult :: (Match -> Maybe Team) -> Match ->
 	[(Team, Int)]| que apura os pontos das equipas de um dado jogo.
