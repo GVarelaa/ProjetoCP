@@ -622,8 +622,9 @@ catamorfismo de listas:
 consolidate' :: (Eq a, Num b) => [(a, b)] -> [(a, b)]
 consolidate' = cataList (either (nil) (uncurry acrescPoints))
 
+acrescPoints = undefined
 -- acrescPoints :: (a,b) -> [(a,b)] -> [(a,b)]
-acrescPoints p = cataList (either (const [p]) ((uncurry (:)) . ((addPoints p))))
+-- acrescPoints p = cataList (either (const [p]) ((uncurry (:)) . ((addPoints p))))
 
 addPoints :: (Eq a, Num b) => (a,b) -> (a,b) -> (a,b)
 addPoints (t1, i1) (t2, i2) = if t1 == t2 then (t1, i1+i2) else (t2,i2)
@@ -1193,9 +1194,21 @@ matchResultAux :: (Team, Team) -> Maybe Team -> [(Team, Int)]
 matchResultAux (t1, t2) Nothing = [(t1, 1), (t2, 1)]
 matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
                                    else [(t1, 0), (t2, 3)]
+\end{code}
 
 
-glt = undefined
+\begin{eqnarray*}
+\xymatrix{
+  LTree Team \ar[d] \ar[r] & Team + (LTree Team)^2 \ar[d]\\
+  Team+ \ar[r] & Team + (Team+)^2
+}
+\end{eqnarray*}
+
+\begin{code}
+
+glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . outListNN
+  where leftSide = ( (uncurry take) . ((`div` 2) >< id) . (split (length) id))
+        rightSide = ( (uncurry drop) . ((`div` 2) >< id) . (split (length) id))
 \end{code}
 \subsubsection*{Versão probabilística}
 \begin{code}
