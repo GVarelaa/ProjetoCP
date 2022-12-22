@@ -1144,10 +1144,25 @@ post = undefined
 \end{code}
 
 \subsection*{Problema 3}
+
+\begin{eqnarray*}
+\xymatrix{
+  Square* & Team + (LTree Team)^2 \ar[l]_{} \\
+  Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
+  Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
+}
+\end{eqnarray*}
+
 \begin{code}
 squares = anaRose gsq
 
-gsq = undefined
+gsq (s, 0) = (s, [])
+gsq (s, n) = (s, l)
+    where l = generate8Squares(s, n)
+
+-- gsq = split (id >< nil) (id >< generate8Squares)
+
+generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), (((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
 rose2List = cataRose gr2l 
 
@@ -1183,7 +1198,7 @@ aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
 exMatch = ("Portugal", "Morocco")
 
 matchFunc :: (Match -> Maybe Team)
-matchFunc exMatch = Just "Morocco"
+matchFunc exMatch = Nothing
 
 -- matchResult = undefined TODO make it pointfree
 matchResult :: (Match -> Maybe Team) -> Match -> [(Team, Int)]
@@ -1206,7 +1221,7 @@ matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
 
 \begin{code}
 
-glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . outListNN
+glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
   where leftSide = ( (uncurry take) . ((`div` 2) >< id) . (split (length) id))
         rightSide = ( (uncurry drop) . ((`div` 2) >< id) . (split (length) id))
 \end{code}
@@ -1217,6 +1232,7 @@ pinitKnockoutStage = undefined
 pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
 pgroupWinners = undefined
 
+pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
 pmatchResult = undefined
 \end{code}
 
