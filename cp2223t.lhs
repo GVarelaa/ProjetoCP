@@ -1160,8 +1160,6 @@ gsq (s, 0) = (s, [])
 gsq (s, n) = (s, l)
     where l = generate8Squares(s, n)
 
--- gsq = split (id >< nil) (id >< generate8Squares)
-
 generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), (((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
 rose2List = cataRose gr2l 
