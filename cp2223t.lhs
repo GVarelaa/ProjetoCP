@@ -602,7 +602,7 @@ simulateGroupStage = map (groupWinners gsCriteria)
 que simula a fase de grupos e dá como resultado a lista dos vencedores,
 recorrendo à função |groupWinners|:
 \begin{code}
-groupWinners criteria = best 2 . consolidate . (>>= matchResult criteria)
+-- groupWinners criteria = best 2 . consolidate . (>>= matchResult criteria)
 \end{code}
 Aqui está apenas em falta a definição da função |matchResult|.
 
@@ -1225,13 +1225,19 @@ glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
 \end{code}
 \subsubsection*{Versão probabilística}
 \begin{code}
-pinitKnockoutStage = undefined
+pinitKnockoutStage :: [[Team]] -> Dist (LTree Team)
+pinitKnockoutStage l = let ltree = initKnockoutStage l
+                       in mkD [(ltree, 1)]
 
+groupWinners :: (Match -> Maybe Team) -> [Match] -> [Team]
+groupWinners criteria l = let result = (l >>= matchResult criteria) 
+                        in (best 2 . consolidate) result
+-- best 2 . consolidate . (>>= matchResult criteria)
 pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
-pgroupWinners = undefined
+pgroupWinners criteria l = mmap (pmatchResult pgsCriteria ) -- continuar
 
 pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
-pmatchResult = undefined
+pmatchResult f m = do {result <- f m; return (matchResultAux m result)}
 \end{code}
 
 %----------------- Índice remissivo (exige makeindex) -------------------------%
