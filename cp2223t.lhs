@@ -1166,7 +1166,9 @@ rose2List = cataRose gr2l
 
 gr2l = ((uncurry (:)) . (id >< concat))
 
-carpets = undefined
+carpets :: Int -> [[Square]]
+carpets = anaList carpGene
+            where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
 
 present = undefined
 \end{code}
