@@ -1164,7 +1164,7 @@ generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3
 
 rose2List = cataRose gr2l 
 
-gr2l = undefined
+gr2l = ((uncurry (:)) . (id >< concat))
 
 carpets = undefined
 
@@ -1234,7 +1234,7 @@ groupWinners criteria l = let result = (l >>= matchResult criteria)
                         in (best 2 . consolidate) result
 -- best 2 . consolidate . (>>= matchResult criteria)
 pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
-pgroupWinners criteria l = mmap (pmatchResult pgsCriteria ) -- continuar
+pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResult pgsCriteria ) -- continuar
 
 pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
 pmatchResult f m = do {result <- f m; return (matchResultAux m result)}
