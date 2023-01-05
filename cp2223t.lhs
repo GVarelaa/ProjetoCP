@@ -1156,9 +1156,9 @@ post = undefined
 \begin{code}
 squares = anaRose gsq
 
-gsq (s, 0) = (s, [])
-gsq (s, n) = (s, l)
-    where l = generate8Squares(s, n)
+gsq (((x,y),l), 0) = (((x+l/3, y+l/3), l/3), [])
+gsq (((x,y),l), n) = (((x+l/3, y+l/3), l/3), list)
+    where list = generate8Squares(((x,y),l), n)
 
 generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), (((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
@@ -1183,7 +1183,7 @@ present :: [[Square]] -> IO [()]
 present = cataList (either (const (return [()])) (auxpresent))
 --  where aux = (uncurry (:)) . (aux2 >< id)
 
-auxpresent = do {aux2present.p1}
+auxpresent = do {aux2present . p1}
 aux2present x = do {drawSq x; threadDelay 1000000; return [()]}
 
 \end{code}
