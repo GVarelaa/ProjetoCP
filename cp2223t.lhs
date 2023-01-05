@@ -1170,7 +1170,22 @@ carpets :: Int -> [[Square]]
 carpets = anaList carpGene
             where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
 
-present = undefined
+present :: [[Square]] -> IO [()]
+--present = undefined--cataList (either (drawSq) (drawSq >< do {drawSq}))
+--present :: [[Square]] -> IO [()]
+-- present [] = return []
+--present (x:xs) = do
+--  drawSq x
+--  threadDelay 1000000 -- wait 1 second
+--  rest <- present xs
+--  return (() : rest)
+
+present = cataList (either (const (return [()])) (auxpresent))
+--  where aux = (uncurry (:)) . (aux2 >< id)
+
+auxpresent = do {aux2present.p1}
+aux2present x = do {drawSq x; threadDelay 1000000; return [()]}
+
 \end{code}
 
 \subsection*{Problema 4}
