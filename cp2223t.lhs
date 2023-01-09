@@ -159,15 +159,15 @@
 
 \begin{center}\large
 \begin{tabular}{ll}
-Grupo nr. & 99 (preencher)
+Grupo nr. & 20
 \\\hline
-a11111 & Nome1 (preencher)
+a97393 & Gabriela Santos Ferreira da Cunha
 \\
-a22222 & Nome2 (preencher)
+a95151 & Hugo Filipe Silva Abelheira
 \\
-a33333 & Nome3 (preencher)
+a97698 & Miguel de Sousa Braga
 \\
-a44444 & Nome4 (preencher, se aplicável)
+a96455 & Nuno Guilherme Cruz Varela
 \end{tabular}
 \end{center}
 
@@ -1140,7 +1140,10 @@ gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 \end{code}
 Função de pós-processamento: 
 \begin{code}
-post = undefined
+post = cataExp genePost
+genePost = either g1 g2
+g1 = singl . singl 
+g2 (h,t) = [h] : map ([h] ++)(concat t)
 \end{code}
 
 \subsection*{Problema 3}
