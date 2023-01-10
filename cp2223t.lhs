@@ -1126,10 +1126,93 @@ Valoriza-se a escrita de \emph{pouco} código que corresponda a soluções
 simples e elegantes.
 
 \subsection*{Problema 1}
+Pretendemos escrever f da seguinte forma:
+\begin{eqnarray*}
+%\start
+     |lcbr(
+          f a b c = 0
+     )(
+          f a b c (n+1) = op (f a b c n) (f' a b c n) (...)
+     )|
+%
+\end{eqnarray*}
+onde op é um operador n-ário e f', f'', ... são funções auxiliares
+
+Utilizando a regra prática do anexo, podemos definir f da seguinte forma:
+\begin{eqnarray*}
+%\start
+     |lcbr(
+          f a b c = 0
+     )(
+          f a b c (n+1) = f' a b c n
+     )|
+%
+\end{eqnarray*}
+onde
+\begin{eqnarray*}
+%\start
+     |lcbr(
+          f' a b c = 1
+     )(
+          f' a b c (n+1) = f'' a b c n
+     )|
+%
+\end{eqnarray*}
+Por fim, 
+\begin{eqnarray*}
+%\start
+     |lcbr(
+          f'' a b c = 1
+     )(
+          f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n
+     )|
+%
+\end{eqnarray*}
+Substituindo sucessivamente, temos:
+\begin{eqnarray*}
+%\start
+     |f a b c (n+3) = f' a b c (n+2) = f'' a b c (n+1)|
+%
+\end{eqnarray*}
+Continuando:
+\begin{eqnarray*}
+%\start
+     |f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n |
+%
+\end{eqnarray*}
+\begin{eqnarray*}
+     |f'' a b c (n+1) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n|
+\end{eqnarray*}
+
+Podemos definir então o sistema:
+\begin{eqnarray*}
+\start
+     |lcbr(
+          f . in = (either (const 0) (p2.p1)) . (id + (split (split f f') f''))
+     )(
+          f' . in = (either (const 0) (p2)) . (id + (split (split f f') f''))
+     )(
+          f'' . in = (either (const 0) (aux)) . (id + (split (split f f') f''))
+     )|
+%
+\just\equiv{ exercício 2 ficha 8 }
+     | split (split f f') f'' = cata (split (split (either (const 0) (p2.p1)) (either (const 1) p2)) (either (const 1) aux)) |
+\just\equiv{Lei da troca}
+     | split (split f f') f'' = cata (split (either (split (const 0) (const 1)) (split (p2.p1) p2)) (either (const 1) aux)) |
+\just\equiv{Lei da troca}
+     | split (split f f') f'' = cata (either (split (split (const 0) (const 1)) (const 1)) (split (split (p2.p1) p2) aux)) |
+\just\equiv{}
+     | split (split f f') f'' = cata (either (const (((0,1),1))) (split (split (p2.p1) p2) aux)) |
+\just\equiv{}
+     | split (split f f') f'' = (for (split (split (p2.p1) p2) aux) (const (((0,1),1)))) |
+\just\equiv{}
+     | f = p1 . p1 . (for (split (split (p2.p1) p2) aux) (((0,1),1))) |
+\end{eqnarray*}
+
 Funções auxiliares pedidas:
 \begin{code}
-loop = undefined
-initial = undefined
+loop = (split (split (p2.p1) p2) aux)
+initial = ((0,1),1)
 wrap = p2
 \end{code}
 
@@ -1200,7 +1283,6 @@ cgene = undefined
 Geração dos jogos da fase de grupos:
 \begin{code}
 
-groupPt = ["Portugal", "South Korea", "Ghana", "Uruguay"]
 
 pairup :: Eq b => [b] -> [(b, b)]
 pairup [] = []
@@ -1218,7 +1300,7 @@ exMatch = ("Portugal", "Morocco")
 matchFunc :: (Match -> Maybe Team)
 matchFunc exMatch = Nothing
 
--- matchResult = undefined TODO make it pointfree
+
 matchResult :: (Match -> Maybe Team) -> Match -> [(Team, Int)]
 matchResult f m = let result = f m in 
                       matchResultAux m result
