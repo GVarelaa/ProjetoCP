@@ -1262,12 +1262,6 @@ A função squares é responsável por criar a Rose Tree dos quadrados para uma 
 É, por isso um anamorfismo de Rose Tree. Assim, o diagrama que espelha a operação é o seguinte:
 
 \begin{eqnarray*}
-
-\xymatrix{
-  Square^* & Team + (LTree Team)^2 \ar[l]_{} \\
-  Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
-  Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
-}
 \xymatrix@@C=2cm{
     |Square| \times |Nat0|
            \ar[d]_-{|squares|}
@@ -1280,7 +1274,6 @@ A função squares é responsável por criar a Rose Tree dos quadrados para uma 
 &
      |Square| \times (|Rose Square|)^*
            \ar[l]^-{|in|}
-
 }
 \end{eqnarray*}
 
@@ -1338,9 +1331,6 @@ onde
 gr2l = ((uncurry (:)) . (id >< concat))
 \end{code}
 
-<<<<<<< HEAD
-
-=======
 Primeiramente, são concatenadas as listas que resultam da chamada recursiva em cada uma das sub-árvores.
 Em seguida, acrescenta-se, à cabeça da lista criada, o quadrado da raiz da árvore.
 
@@ -1369,7 +1359,6 @@ Podemos definir o diagrama para esta operação da seguinte forma:
 
 
 \begin{code}
->>>>>>> ab799e603f67995b27e45511ead047ae382d5217
 carpets :: Int -> [[Square]]
 carpets = anaList carpGene
             where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
