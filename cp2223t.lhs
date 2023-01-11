@@ -1219,9 +1219,33 @@ wrap = p2
 \subsection*{Problema 2}
 Gene de |tax|:
 \begin{code}
-gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
+gene = (id -|- (id >< group)) . out
+
+group = groupBy (\x y -> head y == ' ') . map (drop 4)
 \end{code}
-Função de pós-processamento: 
+
+
+\begin{eqnarray*}
+\xymatrix{
+  |Exp S S| & & S + S \times (|Exp S S|)^*\ar[ll]_{|inExp|} \\
+  S^*\ar@@/_1.5pc/[rr]_{|gene|}\ar[r]^(0.35){|out|}\ar[u]^{|tax|} & S + S \times S^*\ar[r]^(0.48){id + id \times group} & S + S \times (S^*)^*\ar[u]_{id + id \times tax^*}
+}
+\end{eqnarray*}
+
+
+\noindent Função de pós-processamento |post|: 
+
+A função |post| tem a seguinte assinatura |post :: [Exp String String] -> [[String]]|, ou seja, vai transformar uma árvore de expressão numa lista de listas de |String|.
+Como tal, vimos a necessidade de recorrer ao catamorfismo desta estrutura (árvore de expressão).
+A função pode ser descrita pelo seguinte diagrama:
+
+\begin{eqnarray*}
+\xymatrix{
+  |Exp S S|\ar[d]_{|post = cataExp genePost|} & & S + S \times (|Exp S S|)^*\ar[d]^{id + id \times |cataExp genePost|^*}\ar[ll]_(0.55){|inExp|} \\
+  S & & S + S \times ((S^*)^*)^*\ar[ll]^-(0.5){genePost}
+}
+\end{eqnarray*}
+
 \begin{code}
 post = cataExp genePost
 genePost = either g1 g2
@@ -1229,11 +1253,15 @@ g1 = singl . singl
 g2 (h,t) = [h] : map ([h] ++)(concat t)
 \end{code}
 
+A composição da função |tax| com a função de pós-processamento |post| resulta na função |tudo :: [String] -> [[String]]| que produz o efeito mostrado na tabela \ref{table:acmccs}.
+Como a função |tax| é um anamorfismo e a função |post| é um catamorfismo, estamos perante um hilomorfismo (|hyloExp post tax|).
+
+
 \subsection*{Problema 3}
 
 \begin{eqnarray*}
 \xymatrix{
-  Square* & Team + (LTree Team)^2 \ar[l]_{} \\
+  Square^* & Team + (LTree Team)^2 \ar[l]_{} \\
   Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
   Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
 }
@@ -1246,11 +1274,15 @@ gsq (((x,y),l), 0) = (((x+l/3, y+l/3), l/3), [])
 gsq (((x,y),l), n) = (((x+l/3, y+l/3), l/3), list)
     where list = generate8Squares(((x,y),l), n)
 
-generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), (((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
+generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), 
+(((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), 
+(((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), 
+(((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
 rose2List = cataRose gr2l 
 
 gr2l = ((uncurry (:)) . (id >< concat))
+
 
 carpets :: Int -> [[Square]]
 carpets = anaList carpGene
