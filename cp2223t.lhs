@@ -1211,7 +1211,7 @@ Podemos definir então o sistema:
 
 Funções auxiliares pedidas:
 \begin{code}
-loop = (split (split (p2.p1) p2) aux)
+loop = undefined--(split (split (p2.p1) p2) aux)
 initial = ((0,1),1)
 wrap = p2
 \end{code}
@@ -1219,9 +1219,9 @@ wrap = p2
 \subsection*{Problema 2}
 Gene de |tax|:
 \begin{code}
-gene = (id -|- (id >< group)) . out
+gene = (id -|- (id >< group')) . out
 
-group = groupBy (\x y -> head y == ' ') . map (drop 4)
+group' = groupBy (\x y -> head y == ' ') . map (drop 4)
 \end{code}
 
 
@@ -1296,9 +1296,9 @@ gsq (((x,y),l), n) = (((x+l/3, y+l/3), l/3), list)
     where list = generate8Squares(((x,y),l), n)
 
 generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3), n-1), 
-(((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), 
-(((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), 
-(((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
+ (((p1+2*l/3, p2), l/3), n-1), (((p1, p2+l/3), l/3), n-1), 
+ (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), 
+ (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
 \end{code}
 Já a função rose2List converte a árvore gerada numa lista de quadrados para imprimir. É, por isso, um catamorfismo de Rose Tree.
@@ -1385,6 +1385,67 @@ aux2present x = do {drawSq x; threadDelay 1000000; return [()]}
 
 \subsection*{Problema 4}
 \subsubsection*{Versão não probabilística}
+Sabendo que 
+\begin{code}
+-- simulateGroupStage :: [[Match]] -> [[Team]]
+\end{code}
+podemos definir o tipo de initKnockoutStage:
+\begin{code}
+initKnockoutStage :: [[Team]] -> LTree Team
+\end{code}
+
+Como 
+\begin{code} 
+arrangement :: [[Team]] -> [Team]
+\end{code}
+concluímos que 
+\begin{code}
+-- (anaLTree glt) :: [Team] -> LTree Team
+\end{code}
+
+Definimos, por isso, o seguinte diagrama:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |Team|^*
+           \ar[d]_-{|anaLTree glt|}
+           \ar[r]_-{out}
+&
+    |Team| \times |Team|^*
+           \ar[r]_{\cdots}
+&   
+  |Team| \times (|Team|^*)^*
+            \ar[d]^{id \times |anaLTree glt|}
+\\
+    |LTree Team|
+& &
+    |Team| \times (|LTree Team|)^*
+           \ar[ll]^-{|in|}
+}
+\end{eqnarray*}
+
+onde 
+\begin{code}
+
+glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
+  where leftSide = ( (uncurry take) . ((`div` 2) >< id) . (split (length) id))
+        rightSide = ( (uncurry drop) . ((`div` 2) >< id) . (split (length) id))
+\end{code}
+
+Partindo do tipo da função simulateGroupStage, podemos inferir que a função groupWinner terá a seguinte assinatura:
+
+\begin{code}
+-- groupWinners :: [Match] -> [Team]
+\end{code}
+
+sendo que esta é a composição entre as funções
+
+\begin{code}
+-- >>= matchResult criteria
+\end{code}
+
+
+\subsubsection*{Versão não probabilística}
 Gene de |consolidate'|:
 \begin{code}
 cgene = undefined
@@ -1428,12 +1489,6 @@ matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
 }
 \end{eqnarray*}
 
-\begin{code}
-
-glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
-  where leftSide = ( (uncurry take) . ((`div` 2) >< id) . (split (length) id))
-        rightSide = ( (uncurry drop) . ((`div` 2) >< id) . (split (length) id))
-\end{code}
 \subsubsection*{Versão probabilística}
 \begin{code}
 pinitKnockoutStage :: [[Team]] -> Dist (LTree Team)
