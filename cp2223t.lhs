@@ -1258,14 +1258,42 @@ Como a função |tax| é um anamorfismo e a função |post| é um catamorfismo, 
 
 
 \subsection*{Problema 3}
+A função squares é responsável por criar a Rose Tree dos quadrados para uma dada profundidade. 
+É, por isso um anamorfismo de Rose Tree. Assim, o diagrama que espelha a operação é o seguinte:
 
 \begin{eqnarray*}
+
 \xymatrix{
   Square^* & Team + (LTree Team)^2 \ar[l]_{} \\
   Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
   Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
 }
+\xymatrix@@C=2cm{
+    |Square| \times |Nat0|
+           \ar[d]_-{|squares|}
+           \ar[r]_-{gsq}
+&
+    |Square| \times (|Square| \times |Nat0|)^*
+           \ar[d]^{|id >< squares|}
+\\
+     |Rose Square|
+&
+     |Square| \times (|Rose Square|)^*
+           \ar[l]^-{|in|}
+
+}
 \end{eqnarray*}
+
+%\begin{eqnarray*}
+%\xymatrix{
+%  Square* & Team + (LTree Team)^2 \ar[l]_{} \\
+%  Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
+%  Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
+%}
+%\end{eqnarray*}
+
+%|Exp S S| & & S + S \times (|Exp S S|)^*\ar[ll]_{|inExp|} \\
+%  S^*\ar@@/_1.5pc/[rr]_{|gene|}\ar[r]^(0.35){|out|}\ar[u]^{|tax|} & S + S \times S^*\ar[r]^(0.45){\cdots} & S + S \times (S^*)^*\ar[u]_{id + id \times tax^*}
 
 \begin{code}
 squares = anaRose gsq
@@ -1279,15 +1307,75 @@ generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3
 (((p1+2*l/3, p2+l/3), l/3), n-1), (((p1, p2+2*l/3), l/3), n-1), 
 (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
+\end{code}
+Já a função rose2List converte a árvore gerada numa lista de quadrados para imprimir. É, por isso, um catamorfismo de Rose Tree.
+
+\begin{code}
 rose2List = cataRose gr2l 
+\end{code}
 
+O diagrama que representa o catamorfismo pode-se desenhar da seguinte forma:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |Rose Square|
+           \ar[d]_-{|rose2List|}
+           \ar[r]_-{out}
+&
+    |Square| \times (|Rose Square|)^*
+           \ar[d]^{id |><| rose2List^*}
+\\
+    (|Square|)^*
+&
+    |Square| \times ((|Square|)^*)^*
+           \ar[l]^-{|cataRose gr2l|}
+}
+\end{eqnarray*}
+
+onde
+
+\begin{code}
 gr2l = ((uncurry (:)) . (id >< concat))
+\end{code}
+
+<<<<<<< HEAD
+
+=======
+Primeiramente, são concatenadas as listas que resultam da chamada recursiva em cada uma das sub-árvores.
+Em seguida, acrescenta-se, à cabeça da lista criada, o quadrado da raiz da árvore.
+
+A função carpets recebe um inteiro (a profundidade da árvore) e calcula a lista das listas de Squares geradas, 
+tendo por base o quadrado original de canto inferior esquerdo em (0,0) e lado 32.
+Podemos definir o diagrama para esta operação da seguinte forma:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |Nat0|
+           \ar[d]_-{|carpets|}
+           \ar[r]_-{out}
+&   
+  |1 + Nat0|
+            \ar[r]^{\cdots}
+&
+    (|Square|)^* \times |Nat0|
+           \ar[d]^{id |><| carpets}
+\\
+    ((|Square|)^*)^*
+& &
+    (|Square|)^* \times ((|Square|)^*)^*
+           \ar[ll]^-{|in|}
+}
+\end{eqnarray*}
 
 
+\begin{code}
+>>>>>>> ab799e603f67995b27e45511ead047ae382d5217
 carpets :: Int -> [[Square]]
 carpets = anaList carpGene
             where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
-
+\end{code}
+Por fim, definimos a função present, responsável por imprimir para o stdio, a lista de quadrados gerados pela função carpets.
+\begin{code}
 present :: [[Square]] -> IO [()]
 --present = undefined--cataList (either (drawSq) (drawSq >< do {drawSq}))
 --present :: [[Square]] -> IO [()]
