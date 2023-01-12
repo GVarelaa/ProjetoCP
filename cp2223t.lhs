@@ -1174,33 +1174,40 @@ Podemos definir então o sistema:
 \begin{eqnarray*}
 \start
      |lcbr(
-          f . in = (either (const 0) (p2.p1)) . (id + (split (split f f') f''))
+          f . in = (either (const 0) (p2 . p1)) . (id + (split (split f'' f') f))
      )(
-          f' . in = (either (const 0) (p2)) . (id + (split (split f f') f''))
+          f' . in = (either (const 1) (p1 . p1)) . (id + (split (split f'' f') f))
      )(
-          f'' . in = (either (const 0) (aux)) . (id + (split (split f f') f''))
+          f'' . in = (either (const 1) (aux)) . (id + (split (split f'' f') f))
      )|
 %
 \just\equiv{ exercício 2 ficha 8 }
-     | split (split f f') f'' = cata (split (split (either (const 0) (p2.p1)) (either (const 1) p2)) (either (const 1) aux)) |
+     | split (split f'' f') f = cata (split (split (either (const 1) aux) (either (const 1) (p1.p1))) (either (const 0) (p2.p1))) |
 \just\equiv{Lei da troca}
-     | split (split f f') f'' = cata (split (either (split (const 0) (const 1)) (split (p2.p1) p2)) (either (const 1) aux)) |
+     | split (split f'' f') f = cata (split (either (split (const 1) (const 1)) (split (aux) (p1.p1))) (either (const 0) (p2.p1))) |
 \just\equiv{Lei da troca}
-     | split (split f f') f'' = cata (either (split (split (const 0) (const 1)) (const 1)) (split (split (p2.p1) p2) aux)) |
+     | split (split f'' f') f = cata (either (split (split (const 1) (const 1)) (const 0)) (split (split aux (p1.p1)) (p2.p1))) |
 \just\equiv{}
-     | split (split f f') f'' = cata (either (const (((0,1),1))) (split (split (p2.p1) p2) aux)) |
+     | split (split f'' f') f = cata (either (const (((1,1),0))) (split (split (aux) (p1.p1)) (p2.p1))) |
 \just\equiv{}
-     | split (split f f') f'' = (for (split (split (p2.p1) p2) aux) (const (((0,1),1)))) |
+     | split (split f'' f') f = (for (split (split (aux) (p1.p1)) (p2.p1)) (const (((1,1),0)))) |
 \just\equiv{}
-     | f = p1 . p1 . (for (split (split (p2.p1) p2) aux) (((0,1),1))) |
+     | f = p2 . (for (split (split (aux) (p1.p1)) (p2.p1)) (((1,1),0))) |
 \end{eqnarray*}
 
 Funções auxiliares pedidas:
 \begin{code}
-loop = undefined--(split (split (p2.p1) p2) aux)
-initial = ((0,1),1)
+loop a b c = (split (split (aux a b c) (p1.p1)) (p2.p1))
+     where aux a b c = (uncurry (+)) . ( (  (uncurry (+)) . ((a*) >< (b*))  ) >< (c*) )
+initial = ((1,1),0)
 wrap = p2
 \end{code}
+
+Realizando alguns testes de comparação entre o desempenho das duas funções para o cálculo da sequência, verificamos que fbl é, de facto, muito mais eficiente que f.
+Por exemplo, para n=26, o tempo de f é, na máquina onde foi realizado o teste, aproximadamente, 6.81 segundos. Para n=27, o tempo dobra para os 12.53 seegundos. E assim sucessivamente.
+Concluímos assim que o tempo de execução da função f é exponencial. Já a função fbl apresenta um desempenho constante, mesmo para valores de input maiores. 
+Por exemplo, para n=26, o tempo de execução de fbl é, aproximadamente, 0.01 segundos. Apenas quando aumentamos o valor de n para valores realmente grandes (como 100000) é que fbl começa
+a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execução foi de 2.31 segundos.
 
 \subsection*{Problema 2}
 Gene de |tax|:
