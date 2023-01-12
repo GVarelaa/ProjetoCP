@@ -616,20 +616,6 @@ Trabalho a fazer:
 \begin{enumerate}
 \item	Definir uma alternativa à função genérica |consolidate| que seja um
 catamorfismo de listas:
-\begin{code}
-
--- Yet to finish
-consolidate' :: (Eq a, Num b) => [(a, b)] -> [(a, b)]
-consolidate' = cataList (either (nil) (uncurry acrescPoints))
-
-acrescPoints = undefined
--- acrescPoints :: (a,b) -> [(a,b)] -> [(a,b)]
--- acrescPoints p = cataList (either (const [p]) ((uncurry (:)) . ((addPoints p))))
-
-addPoints :: (Eq a, Num b) => (a,b) -> (a,b) -> (a,b)
-addPoints (t1, i1) (t2, i2) = if t1 == t2 then (t1, i1+i2) else (t2,i2)
-
-\end{code}
 \item	Definir a função |matchResult :: (Match -> Maybe Team) -> Match ->
 	[(Team, Int)]| que apura os pontos das equipas de um dado jogo.
 \item Definir a função genérica |pairup :: Eq b => [b] -> [(b, b)]| em que
@@ -1277,17 +1263,6 @@ A função squares é responsável por criar a Rose Tree dos quadrados para uma 
 }
 \end{eqnarray*}
 
-%\begin{eqnarray*}
-%\xymatrix{
-%  Square* & Team + (LTree Team)^2 \ar[l]_{} \\
-%  Rose Square \ar[u]_{rose2List} & Square \times (Rose Square)^* \ar[u]_{|id \times rose2List*|} \\
-%  Square \times Int \ar[r]_{func} \ar[u]_{squares} & Square \times (Square \times Int)^* \ar[u]_{id \times squares*}
-%}
-%\end{eqnarray*}
-
-%|Exp S S| & & S + S \times (|Exp S S|)^*\ar[ll]_{|inExp|} \\
-%  S^*\ar@@/_1.5pc/[rr]_{|gene|}\ar[r]^(0.35){|out|}\ar[u]^{|tax|} & S + S \times S^*\ar[r]^(0.45){\cdots} & S + S \times (S^*)^*\ar[u]_{id + id \times tax^*}
-
 \begin{code}
 squares = anaRose gsq
 
@@ -1450,24 +1425,73 @@ glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
 Partindo do tipo da função simulateGroupStage, podemos inferir que a função groupWinner terá a seguinte assinatura:
 
 \begin{code}
--- groupWinners :: [Match] -> [Team]
 \end{code}
 
 sendo que esta é a composição entre as funções
 
 \begin{code}
--- >>= matchResult criteria
+
 \end{code}
 
+A função consolidate' recebe uma lista de pares (Team, Int), representando a pontuação de cada equipa em cada jogo do grupo e 
+devolve uma lista de pares (Team, Int) em que o inteiro representa a pontuação acumulada pela equipa no final de todos os jogos da fase de grupos.
 
-\subsubsection*{Versão não probabilística}
+\begin{code}
+consolidate' :: (Eq a, Num b) => [(a, b)] -> [(a, b)]
+\end{code}
+
+Podemos representar esta função através do seguinte diagrama:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    (|Team| |><| |Nat0|)^*
+           \ar[d]_-{|consolidate'|}
+           \ar[r]_-{out}
+&
+    1 + (|Team| |><| |Nat0|) |><| (|Team| |><| |Nat0|)^* 
+           \ar[d]_{id + id |><| |consolidate'|}
+\\
+    (|Team| |><| |Nat0|)^*
+&
+    1 + (|Team| |><| |Nat0|) |><| (|Team| |><| |Nat0|)^*
+           \ar[l]^-{|either nil acrescPoints|}
+}
+\end{eqnarray*}
+
+A função acrescPoints tem o seguinte tipo:
+
+\begin{code}
+acrescPoints :: (Eq a, Num b) => (a,b) -> [(a,b)] -> [(a,b)]
+\end{code}
+
+Deverá receber um par (Equipa, Pontuação), adicionando essa pontuação à lista de pares (Equipa, Pontuação)
+recebidos como parâmetro. Caso haja mais uma ocorrência dessa equipa na lista recebida, os pontos são somados.
+Em caso contrário, um novo elemento (Equipa, Pontuação) é adicionado ao fim da lista.
+
+\begin{code}
+acrescPoints a [] = [a]
+acrescPoints (t,points) ((t2, points2):xs) = if t == t2 then (t2, points+points2) : xs else (t2,points2) : acrescPoints (t, points) xs
+\end{code}
+
+Definimos, assim, a função consolidate' como um catamorfimos de listas:
+
+\begin{code}
+consolidate' = cataList (either (nil) (uncurry acrescPoints))
+\end{code}
+
 Gene de |consolidate'|:
 \begin{code}
 cgene = undefined
 \end{code}
-Geração dos jogos da fase de grupos:
-\begin{code}
 
+A função pairup é responsável pelo emparelhamento das equipas em cada um dos grupos. 
+Assim, esta função recebe como parâmetro a lista das equipas do grupo e devolve como resultado
+a lista dos jogos a realizar.
+
+Numa primeira abordagem, o nosso grupo seguiu o método tradicional de recursividade fornecido pelo Haskell,
+implementando a função da seguinte forma:
+
+\begin{code}
 
 pairup :: Eq b => [b] -> [(b, b)]
 pairup [] = []
@@ -1480,7 +1504,30 @@ pair a b = (a,b)
 
 aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
 
-exMatch = ("Portugal", "Morocco")
+\end{code}
+
+Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o seguinte diagrama:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    (|Team|)^*
+           \ar[d]_-{|pairup|}
+           \ar[r]_-{out}
+&
+    1 + (|Team| |><| |Team|^*)
+           \ar[r]_{\cdots}
+&
+    1 + (|Team| |><| |Team|)^* |><| |Team|^*
+           \ar[d]_{id + id |><| |pairup|}
+\\
+    (|Team| |><| |Nat0|)^*
+& &
+    1 + (|Team| |><| |Nat0|) |><| (|Team| |><| |Nat0|)^*
+           \ar[ll]^-{|either nil acrescPoints|}
+}
+\end{eqnarray*}
+
+\begin{code}
 
 matchFunc :: (Match -> Maybe Team)
 matchFunc exMatch = Nothing
