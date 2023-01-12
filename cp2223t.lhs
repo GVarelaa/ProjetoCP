@@ -1364,22 +1364,37 @@ carpets = anaList carpGene
             where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
 \end{code}
 Por fim, definimos a função present, responsável por imprimir para o stdio, a lista de quadrados gerados pela função carpets.
+Esta função é um catamorfismo de listas que irá completar a definição do hilomorfismo constructSierp.
+
+O diagrama que ilustra esta operação é o seguinte:
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    (|Square|^*)^*
+           \ar[d]_-{|present|}
+           \ar[r]_-{out}
+&   
+    1 + |Square|^* \times (|Square|^*)^*
+            \ar[d]^{id + id |><| present}
+\\
+    |IO [()]|
+&
+    1 + |Square|^* \times |IO [()]|
+           \ar[l]^-{|gene|}
+}
+\end{eqnarray*}
+
+Assim, no caso da lista vazia, a função deveria usar a função unidade do monad IO (return). 
+No caso de uma lista com pelo menos um elemento, esta deve imprimir esse elemento para o ecrã, fazendo o mesmo para cada um dos elementos da cauda.
+
+Podemos, no entanto, simplificar esta operação através do uso de um mmap, que percorre a lista, 
+desenhando, primeiramente, o quadrado no ecrã e esperando depois 1 segundo por cada elemento
+
 \begin{code}
+
 present :: [[Square]] -> IO [()]
---present = undefined--cataList (either (drawSq) (drawSq >< do {drawSq}))
---present :: [[Square]] -> IO [()]
--- present [] = return []
---present (x:xs) = do
---  drawSq x
---  threadDelay 1000000 -- wait 1 second
---  rest <- present xs
---  return (() : rest)
-
-present = cataList (either (const (return [()])) (auxpresent))
---  where aux = (uncurry (:)) . (aux2 >< id)
-
-auxpresent = do {aux2present . p1}
-aux2present x = do {drawSq x; threadDelay 1000000; return [()]}
+present = mmap presentaux
+     where presentaux x = do {drawSq x; threadDelay 1000000; return ()}
 
 \end{code}
 
