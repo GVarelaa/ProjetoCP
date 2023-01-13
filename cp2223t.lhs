@@ -1112,63 +1112,42 @@ Valoriza-se a escrita de \emph{pouco} código que corresponda a soluções
 simples e elegantes.
 
 \subsection*{Problema 1}
-Pretendemos escrever f da seguinte forma:
-\begin{eqnarray*}
-%\start
-     |lcbr(
-          f a b c = 0
-     )(
-          f a b c (n+1) = op (f a b c n) (f' a b c n) (...)
-     )|
-%
-\end{eqnarray*}
-onde op é um operador n-ário e f', f'', ... são funções auxiliares
+No problema 1, é nos pedido para definir, tendo em conta a recursividade mútua, a seguinte função |f|.
 
-Utilizando a regra prática do anexo, podemos definir f da seguinte forma:
+\begin{code}
+f a b c 0 = 0
+f a b c 1 = 1
+f a b c 2 = 1
+f a b c (n+3) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n
+\end{code}
+
+Para tal, utilizamos duas funções auxiliares |f'| e |f''|, em que |f' a b c n = f a b c (n+2)| e |f'' a b c n = f a b c (n+1)|.
+
+Como resultado das várias substituições, obtivemos o seguinte sistema:
+
 \begin{eqnarray*}
-%\start
+\start
+  \begin{cases}
      |lcbr(
-          f a b c = 0
+          f a b c 0 = 0
      )(
           f a b c (n+1) = f' a b c n
      )|
-%
-\end{eqnarray*}
-onde
-\begin{eqnarray*}
-%\start
+     \\
      |lcbr(
-          f' a b c = 1
+          f' a b c 0 = 1
      )(
           f' a b c (n+1) = f'' a b c n
      )|
-%
-\end{eqnarray*}
-Por fim, 
-\begin{eqnarray*}
-%\start
+     \\
      |lcbr(
-          f'' a b c = 1
+          f'' a b c 0 = 1
      )(
           f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n
      )|
-%
+  \end{cases}
 \end{eqnarray*}
-Substituindo sucessivamente, temos:
-\begin{eqnarray*}
-%\start
-     |f a b c (n+3) = f' a b c (n+2) = f'' a b c (n+1)|
-%
-\end{eqnarray*}
-Continuando:
-\begin{eqnarray*}
-%\start
-     |f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n |
-%
-\end{eqnarray*}
-\begin{eqnarray*}
-     |f'' a b c (n+1) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n|
-\end{eqnarray*}
+
 
 Podemos definir então o sistema:
 \begin{eqnarray*}
