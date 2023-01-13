@@ -1216,15 +1216,6 @@ a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execu
 gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 \end{code}
 
-<<<<<<< HEAD
-=======
-%A func ̧a ̃o gene vai ser expressa em func ̧a ̃o do seu caso base e caso geral. De notar que, se aplicarmos o funtor das listas na ̃o vazias (out) ao argumento da func ̧a ̃o, podemos definir o gene como uma soma de func ̧o ̃es.
-%O lado esquerdo da soma - correspondente ao caso de paragem - sera ́ a identidade. Isto porque, caso a lista seja singular, pretende devolver-se esse elemento, que sera ́ uma folha na a ́rvore de ex- pressa ̃o.
-%Oladodireitodasomae ́,comoja ́temsidoha ́bito,bastantemaiscomplexo.Comosedevetratarde uma func ̧a ̃o que recebe e devolve pares, vamos exprimi-la como um produto de outras duas func ̧o ̃es. O fator do lado esquerdo deve ser, mais uma vez, a identidade, visto que se pretende preservar o elemento a` cabec ̧a da lista no nodo atual da a ́rvore. O fator do lado direito deve ser uma func ̧a ̃o que, dada a cauda da lista, remova 4 espac ̧os a todos os elementos (visto que estes elementos sera ̃o filhos naa ́rvore,todososelementosdalistasera ̃ostringsquecomec ̧amcom,pelomenos,4espac ̧os),eparta a lista resultante por suba ́rvores a explorar recursivamente. Como se faz esta divisa ̃o? Simplesmente parte-se a lista sempre que ha ́ um elemento que na ̃o esta ́ identado. Porqueˆ nesses elementos? Porque esses elementos constituem as ra ́ızes das suba ́rvores e, por isso, devem ser a cabec ̧a das listas que sera ̃o recursivamente convertidas em a ́rvores.
-%Deste modo, comec ̧a-se por um map trim a` lista inicial. A func ̧a ̃o trim remove os primeiros quatro espac ̧os de uma string. De seguida, essa func ̧a ̃o e ́ composta com um groupBy (const canTrim)14. A func ̧a ̃o groupBy esta ́ definida no mo ́dulo de Haskell Data.List e parte uma lista sempre que a func ̧a ̃o argumento seja verdadeiro, colocando o elemento para o qual isso aconteceu a` cabec ̧a de uma nova lista.
-
->>>>>>> 0b7f0d06445ead861cc08aad1249855d8567ab6a
-
 \begin{eqnarray*}
 \xymatrix{
   |Exp S S| & & S + S \times (|Exp S S|)^*\ar[ll]_{|inExp|} \\
@@ -1232,8 +1223,12 @@ gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 }
 \end{eqnarray*}
 
+\paragraph{} Primeiramente, aplicamos o functor das lista não vazias, |out|, para podermos definir o gene como uma soma de funções.
+\paragraph{} À esquerda da soma temos aquilo que forma o caso de paragem, a identidade. Se a lista tiver apenas um elemento, a função deverá retornar esse mesmo elemento que corresponderá a uma \textit{leaf} na árvore de 
+expressões. O lado direito será expresso como um produto de duas funções. O primeiro fator deste produto de funções é a identidade para que se preserve o elemento à cabeça da lista no nodo atual da àrvore. 
+O segundo fator, à direita do produto, é uma função que recebe a cauda da lista e remova 4 espaços de cada elemento. Para isto usou-se a função \textit{drop} que recebe como argumento o número de elementos que se quer retirar. Para além disso, tem que dividir a lista resultante noutras subárvores. Para esta divisão, temos apenas que verificar quando é que um elemento não é antecedido por nenhum espaço, 
+ou seja, não está identado, isto porque estes elementos correspondem às raízes de cada subárvore e, deste modo, devem ser colocados à cabeça das listas que serão convertidas em novas ávores de expressão. Assim, usamos a |groupBy| que faz uma partição da lista e coloca o respetivo elemento à cabeça da lista. Para a definição do predicado utilizamos uma expressão |lambda| com o comportamento anteriormente especificado.
 
-\newpage
 \noindent\underline{Função de pós-processamento |post|:}
 
 A função |post| tem a seguinte assinatura |post :: [Exp String String] -> [[String]]|, ou seja, vai transformar uma árvore de expressão numa lista de listas de |String|.
