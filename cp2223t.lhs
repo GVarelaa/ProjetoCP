@@ -1148,31 +1148,55 @@ Como resultado das várias substituições, obtivemos o seguinte sistema:
   \end{cases}
 \end{eqnarray*}
 
+\begin{eqnarray*}
+\start
+  \begin{cases}
+     |lcbr(
+          f a b c 0 = 0
+     )(
+          f a b c (n+1) = f' a b c n
+     )|
+     \\
+     |lcbr(
+          f' a b c 0 = 1
+     )(
+          f' a b c (n+1) = f'' a b c n
+     )|
+     \\
+     |lcbr(
+          f'' a b c 0 = 1
+     )(
+          f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n
+     )|
+  \end{cases}
+\end{eqnarray*}
+
 
 Podemos definir então o sistema:
 \begin{eqnarray*}
 \start
+\begin{cases}
      |lcbr(
           f . in = (either (const 0) (p2 . p1)) . (id + (split (split f'' f') f))
      )(
           f' . in = (either (const 1) (p1 . p1)) . (id + (split (split f'' f') f))
-     )(
-          f'' . in = (either (const 1) (aux)) . (id + (split (split f'' f') f))
      )|
+     \\
+     |f'' . in = (either (const 1) (aux)) . (id + (split (split f'' f') f))|
+     
+\end{cases}
 %
-\just\equiv{ exercício 2 ficha 8 }
+\just\equiv{ Lei da recursividade mútua }
      | split (split f'' f') f = cata (split (split (either (const 1) aux) (either (const 1) (p1.p1))) (either (const 0) (p2.p1))) |
 \just\equiv{Lei da troca}
      | split (split f'' f') f = cata (split (either (split (const 1) (const 1)) (split (aux) (p1.p1))) (either (const 0) (p2.p1))) |
 \just\equiv{Lei da troca}
      | split (split f'' f') f = cata (either (split (split (const 1) (const 1)) (const 0)) (split (split aux (p1.p1)) (p2.p1))) |
-\just\equiv{}
-     | split (split f'' f') f = cata (either (const (((1,1),0))) (split (split (aux) (p1.p1)) (p2.p1))) |
-\just\equiv{}
-     | split (split f'' f') f = (for (split (split (aux) (p1.p1)) (p2.p1)) (const (((1,1),0)))) |
-\just\equiv{}
-     | f = p2 . (for (split (split (aux) (p1.p1)) (p2.p1)) (((1,1),0))) |
+\just\equiv{ Definição de for }
+     | split (split f'' f') f = (for (split (split (aux) (p1.p1)) (p2.p1)) (const (((1,1),0)))) |     
 \end{eqnarray*}
+
+| f = p2 . (for (split (split (aux) (p1.p1)) (p2.p1)) (((1,1),0))) |
 
 Funções auxiliares pedidas:
 \begin{code}
