@@ -602,7 +602,7 @@ simulateGroupStage = map (groupWinners gsCriteria)
 que simula a fase de grupos e dá como resultado a lista dos vencedores,
 recorrendo à função |groupWinners|:
 \begin{code}
--- groupWinners criteria = best 2 . consolidate . (>>= matchResult criteria)
+groupWinners criteria = best 2 . consolidate . (>>= matchResult criteria)
 \end{code}
 Aqui está apenas em falta a definição da função |matchResult|.
 
@@ -1017,7 +1017,7 @@ rankings = [
 \end{code}
 Geração dos jogos da fase de grupos:
 \begin{code}
-generateMatches = pairup
+generateMatches = concat . pairup
 \end{code}
 Preparação da árvore do ``mata-mata'':
 \begin{code}
@@ -1500,9 +1500,9 @@ implementando a função da seguinte forma:
 
 \begin{code}
 
-pairup :: Eq b => [b] -> [(b, b)]
-pairup [] = []
-pairup (x:xs) = aux2 x xs ++ pairup xs
+pairup' :: Eq b => [b] -> [(b, b)]
+pairup' [] = []
+pairup' (x:xs) = aux2 x xs ++ pairup' xs
               
 aux a [] = []
 aux a (x:xs) = (a,x) : aux a xs
@@ -1510,6 +1510,8 @@ aux a (x:xs) = (a,x) : aux a xs
 pair a b = (a,b)
 
 aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
+
+pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
 
 \end{code}
 
@@ -1534,11 +1536,11 @@ Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o s
 }
 \end{eqnarray*}
 
+Quanto à função matchResult, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
+Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável result.
+Depois, aplicamos a função matchResultAux que, a partir do resultado jogo jogo, Nothing ou Just Equipa, devolve os pontos de cada equipa.
+
 \begin{code}
-
-matchFunc :: (Match -> Maybe Team)
-matchFunc exMatch = Nothing
-
 
 matchResult :: (Match -> Maybe Team) -> Match -> [(Team, Int)]
 matchResult f m = let result = f m in 
@@ -1550,30 +1552,52 @@ matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
                                    else [(t1, 0), (t2, 3)]
 \end{code}
 
-
-\begin{eqnarray*}
-\xymatrix{
-  LTree Team \ar[d] \ar[r] & Team + (LTree Team)^2 \ar[d]\\
-  Team+ \ar[r] & Team + (Team+)^2
-}
-\end{eqnarray*}
-
 \subsubsection*{Versão probabilística}
+A função pinitKnockoutStage é a versão monádica da função initKnockoutStage.
+Como tal, recebe a lista dos 2 primeiros classificados de cada grupo e gera a distribuição das possíveis árvores para a fase a eliminar.
+
 \begin{code}
 pinitKnockoutStage :: [[Team]] -> Dist (LTree Team)
+\end{code}
+
+É importante lembrar que o resultado da função psimulateGroupStage é uma distribuição de listas.
+No entanto, o conceito de monad e, em particular o de bind, torna possível, através do uso do operador de composição de kleisli 
+que esta função receba o tipo [[Team]].
+
+\begin{code}
 pinitKnockoutStage l = let ltree = initKnockoutStage l
-                       in mkD [(ltree, 1)]
+                      in mkD [(ltree, 1)]
+\end{code}
 
-groupWinners :: (Match -> Maybe Team) -> [Match] -> [Team]
-groupWinners criteria l = let result = (l >>= matchResult criteria) 
-                        in (best 2 . consolidate) result
--- best 2 . consolidate . (>>= matchResult criteria)
-pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
-pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResult pgsCriteria ) -- continuar
+Basta por isso devolver a distribuição com apenas um elemento, ao qual associamos a probabilidade 1.
 
+Quanto à função pmatchResult, esta funcionará sobre os seguintes tipos:
+\begin{code}
 pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
+\end{code}
+
+A função recebe uma função que, dado um jogo, calcula a distribuição das probabilidades de cada uma das equipas ganhar o jogo.
+Assim, recebendo esta função como parâmetro, juntamente com o jogo, a função devolve a distribuição das pontuações
+de cada uma das equipas após jogo.
+s
+Assim, tomamos partido da definição da função não monádica em notação let...in, sendo a sua transformação para notação do imediata.
+
+\begin{code}
 pmatchResult f m = do {result <- f m; return (matchResultAux m result)}
 \end{code}
+
+Quanto à função pgroupWinners, esta terá uma definição muito semelhante à da função pmatchResult, com a diferença de
+que irá aplicar a função mencionada a cada um dos jogos dados como parâmetro numa lista.
+Assim, o tipo do valor devolido pela função será uma distribuição de listas de equipas, representando as possíveis equipas (e respetivas responsabilidades)
+que irão ganhar o grupo.
+
+\begin{code}
+pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
+pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResult pgsCriteria ) 
+\end{code}
+
+Começamos, por isso, por aplicar a função pmatchResult com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no monad das distribuições,
+com o map monádico. Por fim, dentro do monad, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
 
 %----------------- Índice remissivo (exige makeindex) -------------------------%
 
