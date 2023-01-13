@@ -1216,6 +1216,14 @@ a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execu
 gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 \end{code}
 
+<<<<<<< HEAD
+=======
+%A func ̧a ̃o gene vai ser expressa em func ̧a ̃o do seu caso base e caso geral. De notar que, se aplicarmos o funtor das listas na ̃o vazias (out) ao argumento da func ̧a ̃o, podemos definir o gene como uma soma de func ̧o ̃es.
+%O lado esquerdo da soma - correspondente ao caso de paragem - sera ́ a identidade. Isto porque, caso a lista seja singular, pretende devolver-se esse elemento, que sera ́ uma folha na a ́rvore de ex- pressa ̃o.
+%Oladodireitodasomae ́,comoja ́temsidoha ́bito,bastantemaiscomplexo.Comosedevetratarde uma func ̧a ̃o que recebe e devolve pares, vamos exprimi-la como um produto de outras duas func ̧o ̃es. O fator do lado esquerdo deve ser, mais uma vez, a identidade, visto que se pretende preservar o elemento a` cabec ̧a da lista no nodo atual da a ́rvore. O fator do lado direito deve ser uma func ̧a ̃o que, dada a cauda da lista, remova 4 espac ̧os a todos os elementos (visto que estes elementos sera ̃o filhos naa ́rvore,todososelementosdalistasera ̃ostringsquecomec ̧amcom,pelomenos,4espac ̧os),eparta a lista resultante por suba ́rvores a explorar recursivamente. Como se faz esta divisa ̃o? Simplesmente parte-se a lista sempre que ha ́ um elemento que na ̃o esta ́ identado. Porqueˆ nesses elementos? Porque esses elementos constituem as ra ́ızes das suba ́rvores e, por isso, devem ser a cabec ̧a das listas que sera ̃o recursivamente convertidas em a ́rvores.
+%Deste modo, comec ̧a-se por um map trim a` lista inicial. A func ̧a ̃o trim remove os primeiros quatro espac ̧os de uma string. De seguida, essa func ̧a ̃o e ́ composta com um groupBy (const canTrim)14. A func ̧a ̃o groupBy esta ́ definida no mo ́dulo de Haskell Data.List e parte uma lista sempre que a func ̧a ̃o argumento seja verdadeiro, colocando o elemento para o qual isso aconteceu a` cabec ̧a de uma nova lista.
+
+>>>>>>> 0b7f0d06445ead861cc08aad1249855d8567ab6a
 
 \begin{eqnarray*}
 \xymatrix{
@@ -1250,7 +1258,7 @@ A composição da função |tax| com a função de pós-processamento |post| res
 
 
 \subsection*{Problema 3}
-A função squares é responsável por criar a Rose Tree dos quadrados para uma dada profundidade. 
+A função |squares| é responsável por criar a Rose Tree dos quadrados para uma dada profundidade. 
 É, por isso um anamorfismo de Rose Tree. Assim, o diagrama que espelha a operação é o seguinte:
 
 \begin{eqnarray*}
@@ -1282,7 +1290,7 @@ generate8Squares (((p1,p2), l), n) = [(((p1,p2), l/3), n-1), (((p1+l/3, p2), l/3
  (((p1+l/3, p2+2*l/3), l/3), n-1), (((p1+2*l/3, p2+2*l/3), l/3), n-1)]
 
 \end{code}
-Já a função rose2List converte a árvore gerada numa lista de quadrados para imprimir. É, por isso, um catamorfismo de Rose Tree.
+Já a função |rose2List| converte a árvore gerada numa lista de quadrados para imprimir. É, por isso, um catamorfismo de Rose Tree.
 
 \begin{code}
 rose2List = cataRose gr2l 
@@ -1344,8 +1352,8 @@ carpets :: Int -> [[Square]]
 carpets = anaList carpGene
             where carpGene = ((const (sierpinski(((0,0), 32), 1)) -|- (((curry (sierpinski) ((0,0), 32)) >< id) . (split id id))) . outNat)
 \end{code}
-Por fim, definimos a função present, responsável por imprimir para o stdio, a lista de quadrados gerados pela função carpets.
-Esta função é um catamorfismo de listas que irá completar a definição do hilomorfismo constructSierp.
+Por fim, definimos a função |present|, responsável por imprimir para o |stdio|, a lista de quadrados gerados pela função |carpets|.
+Esta função é um catamorfismo de listas que irá completar a definição do hilomorfismo |constructSierp|.
 
 O diagrama que ilustra esta operação é o seguinte:
 
@@ -1381,41 +1389,26 @@ present = mmap presentaux
 
 \subsection*{Problema 4}
 \subsubsection*{Versão não probabilística}
-Sabendo que 
-\begin{code}
--- simulateGroupStage :: [[Match]] -> [[Team]]
-\end{code}
-podemos definir o tipo de initKnockoutStage:
-\begin{code}
-initKnockoutStage :: [[Team]] -> LTree Team
-\end{code}
 
-Como 
-\begin{code} 
-arrangement :: [[Team]] -> [Team]
-\end{code}
-concluímos que 
-\begin{code}
--- (anaLTree glt) :: [Team] -> LTree Team
-\end{code}
-
-Definimos, por isso, o seguinte diagrama:
+A função |initKnockoutStage| serve-se da função |arrangement| e de um anamorfismo de gene |glt|
+A função tem como propósito criar a |LTree| de equipas para a fase a eliminar.
+O gene é a composição do |out| das listas com duas funções. A primeira 
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
-    |Team|^*
+    |Team|^+
            \ar[d]_-{|anaLTree glt|}
            \ar[r]_-{out}
 &
-    |Team| \times |Team|^*
+    |Team| + |Team| |><| |Team|^+
            \ar[r]_{\cdots}
 &   
-  |Team| \times (|Team|^*)^*
+  |Team| + ((|Team|)^+)^2
             \ar[d]^{id \times |anaLTree glt|}
 \\
     |LTree Team|
 & &
-    |Team| \times (|LTree Team|)^*
+    |Team| + (|LTree Team|)^2
            \ar[ll]^-{|in|}
 }
 \end{eqnarray*}
@@ -1476,18 +1469,21 @@ Em caso contrário, um novo elemento (Equipa, Pontuação) é adicionado ao fim 
 
 \begin{code}
 acrescPoints a [] = [a]
-acrescPoints (t,points) ((t2, points2):xs) = if t == t2 then (t2, points+points2) : xs else (t2,points2) : acrescPoints (t, points) xs
+acrescPoints (t,points) ((t2, points2):xs) = if t == t2 then (t2, points+points2) : xs 
+                                                        else (t2,points2) : acrescPoints (t, points) xs
 \end{code}
 
-Definimos, assim, a função consolidate' como um catamorfimos de listas:
+
+Definimos, assim, a função |consolidate'| como um catamorfimos de listas:
 
 \begin{code}
-consolidate' = cataList (either (nil) (uncurry acrescPoints))
+consolidate' = cataList (cgene)
 \end{code}
 
-Gene de |consolidate'|:
+\underline{Gene de |consolidate'|:}
 \begin{code}
-cgene = undefined
+cgene :: (Eq a1, Num b) => Either a2 ((a1, b), [(a1, b)]) -> [(a1, b)]
+cgene = (either (nil) (uncurry acrescPoints))
 \end{code}
 
 A função pairup é responsável pelo emparelhamento das equipas em cada um dos grupos. 
@@ -1538,16 +1534,22 @@ Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o s
     1 + (|Team| |><| |Team|)^* |><| |Team|^*
            \ar[d]_{id + id |><| |pairup|}
 \\
-    (|Team| |><| |Nat0|)^*
+    ((|Team| |><| |Team|)^*)^*
 & &
-    1 + (|Team| |><| |Nat0|) |><| (|Team| |><| |Nat0|)^*
-           \ar[ll]^-{|either nil acrescPoints|}
+    1 + (|Team| |><| |Team|)^* |><| ((|Team| |><| |Team|)^*)^*
+           \ar[ll]^-{|in|}
 }
 \end{eqnarray*}
 
-Quanto à função matchResult, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
+\begin{code}
+
+pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
+
+\end{code}
+
+Quanto à função |matchResult|, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
 Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável result.
-Depois, aplicamos a função matchResultAux que, a partir do resultado jogo jogo, Nothing ou Just Equipa, devolve os pontos de cada equipa.
+Depois, aplicamos a função |matchResultAux| que, a partir do resultado do jogo, Nothing ou Just Equipa, devolve os pontos de cada equipa.
 
 \begin{code}
 
@@ -1562,14 +1564,14 @@ matchResultAux (t1, t2) (Just t) = if t == t1 then [(t1, 3), (t2, 0)]
 \end{code}
 
 \subsubsection*{Versão probabilística}
-A função pinitKnockoutStage é a versão monádica da função initKnockoutStage.
+A função |pinitKnockoutStage| é a versão monádica da função |initKnockoutStage|.
 Como tal, recebe a lista dos 2 primeiros classificados de cada grupo e gera a distribuição das possíveis árvores para a fase a eliminar.
 
 \begin{code}
 pinitKnockoutStage :: [[Team]] -> Dist (LTree Team)
 \end{code}
 
-É importante lembrar que o resultado da função psimulateGroupStage é uma distribuição de listas.
+É importante lembrar que o resultado da função |psimulateGroupStage| é uma distribuição de listas.
 No entanto, o conceito de monad e, em particular o de bind, torna possível, através do uso do operador de composição de kleisli 
 que esta função receba o tipo [[Team]].
 
@@ -1580,7 +1582,7 @@ pinitKnockoutStage l = let ltree = initKnockoutStage l
 
 Basta por isso devolver a distribuição com apenas um elemento, ao qual associamos a probabilidade 1.
 
-Quanto à função pmatchResult, esta funcionará sobre os seguintes tipos:
+Quanto à função |pmatchResult|, esta funcionará sobre os seguintes tipos:
 \begin{code}
 pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
 \end{code}
@@ -1588,16 +1590,15 @@ pmatchResult :: (Match -> Dist (Maybe Team)) -> Match -> Dist ([(Team, Int)])
 A função recebe uma função que, dado um jogo, calcula a distribuição das probabilidades de cada uma das equipas ganhar o jogo.
 Assim, recebendo esta função como parâmetro, juntamente com o jogo, a função devolve a distribuição das pontuações
 de cada uma das equipas após jogo.
-s
 Assim, tomamos partido da definição da função não monádica em notação let...in, sendo a sua transformação para notação do imediata.
 
 \begin{code}
 pmatchResult f m = do {result <- f m; return (matchResultAux m result)}
 \end{code}
 
-Quanto à função pgroupWinners, esta terá uma definição muito semelhante à da função pmatchResult, com a diferença de
+Quanto à função |pgroupWinners|, esta terá uma definição muito semelhante à da função |pmatchResult|, com a diferença de
 que irá aplicar a função mencionada a cada um dos jogos dados como parâmetro numa lista.
-Assim, o tipo do valor devolido pela função será uma distribuição de listas de equipas, representando as possíveis equipas (e respetivas responsabilidades)
+Assim, o tipo do valor devolvido pela função será uma distribuição de listas de equipas, representando as possíveis equipas (e respetivas responsabilidades)
 que irão ganhar o grupo.
 
 \begin{code}
@@ -1605,8 +1606,8 @@ pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
 pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResult pgsCriteria ) 
 \end{code}
 
-Começamos, por isso, por aplicar a função pmatchResult com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no monad das distribuições,
-com o map monádico. Por fim, dentro do monad, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
+Começamos, por isso, por aplicar a função |pmatchResult| com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no monad das distribuições,
+com o |map| monádico. Por fim, dentro do monad, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
 
 
 %----------------- Índice remissivo (exige makeindex) -------------------------%
