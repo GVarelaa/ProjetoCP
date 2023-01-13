@@ -1114,12 +1114,10 @@ simples e elegantes.
 \subsection*{Problema 1}
 No problema 1, é nos pedido para definir, tendo em conta a recursividade mútua, a seguinte função |f|.
 
-\begin{code}
-f a b c 0 = 0
-f a b c 1 = 1
-f a b c 2 = 1
-f a b c (n+3) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n
-\end{code}
+| f a b c 0 = 0 |
+| f a b c 1 = 1 |
+| f a b c 2 = 1 |
+| f a b c (n+3) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n |
 
 Para tal, utilizamos duas funções auxiliares |f'| e |f''|, em que |f' a b c n = f a b c (n+2)| e |f'' a b c n = f a b c (n+1)|.
 
@@ -1183,10 +1181,24 @@ wrap = p2
 \end{code}
 
 Realizando alguns testes de comparação entre o desempenho das duas funções para o cálculo da sequência, verificamos que fbl é, de facto, muito mais eficiente que f.
-Por exemplo, para n=26, o tempo de f é, na máquina onde foi realizado o teste, aproximadamente, 6.81 segundos. Para n=27, o tempo dobra para os 12.53 seegundos. E assim sucessivamente.
+Por exemplo, como visualizamos na \ref{fig1}, para n=26, o tempo de f é, na máquina onde foi realizado o teste, aproximadamente, 4.41 segundos. Na \ref{fig2}, para n=27, o tempo aumenta para 7.47 seegundos. E assim sucessivamente.
 Concluímos assim que o tempo de execução da função f é exponencial. Já a função fbl apresenta um desempenho constante, mesmo para valores de input maiores. 
 Por exemplo, para n=26, o tempo de execução de fbl é, aproximadamente, 0.01 segundos. Apenas quando aumentamos o valor de n para valores realmente grandes (como 100000) é que fbl começa
-a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execução foi de 2.31 segundos.
+a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execução foi de 1.96 segundos.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{cp2223t_media/f26.png}
+  \caption{Desempenho das funções para n=26.}
+  \label{fig1}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{cp2223t_media/f27.png}
+  \caption{Desempenho das funções para n=27.}
+  \label{fig2}
+\end{figure}
 
 \subsection*{Problema 2}
 Gene de |tax|:
