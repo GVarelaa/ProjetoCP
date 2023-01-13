@@ -1223,11 +1223,11 @@ gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 }
 \end{eqnarray*}
 
-\paragraph{} Primeiramente, aplicamos o functor das lista não vazias, |out|, para podermos definir o gene como uma soma de funções.
+\paragraph{} Primeiramente, aplicamos o functor das listas não vazias, |out|, para podermos definir o gene como uma soma de funções.
 \paragraph{} À esquerda da soma temos aquilo que forma o caso de paragem, a identidade. Se a lista tiver apenas um elemento, a função deverá retornar esse mesmo elemento que corresponderá a uma \textit{leaf} na árvore de 
-expressões. O lado direito será expresso como um produto de duas funções. O primeiro fator deste produto de funções é a identidade para que se preserve o elemento à cabeça da lista no nodo atual da àrvore. 
-O segundo fator, à direita do produto, é uma função que recebe a cauda da lista e remova 4 espaços de cada elemento. Para isto usou-se a função \textit{drop} que recebe como argumento o número de elementos que se quer retirar. Para além disso, tem que dividir a lista resultante noutras subárvores. Para esta divisão, temos apenas que verificar quando é que um elemento não é antecedido por nenhum espaço, 
-ou seja, não está identado, isto porque estes elementos correspondem às raízes de cada subárvore e, deste modo, devem ser colocados à cabeça das listas que serão convertidas em novas ávores de expressão. Assim, usamos a |groupBy| que faz uma partição da lista e coloca o respetivo elemento à cabeça da lista. Para a definição do predicado utilizamos uma expressão |lambda| com o comportamento anteriormente especificado.
+expressões. O lado direito será expresso como um produto de duas funções. O primeiro fator deste produto de funções é a identidade para que se preserve o elemento à cabeça da lista no nodo atual da árvore. 
+O segundo fator, à direita do produto, é uma função que recebe a cauda da lista e remove 4 espaços de cada elemento. Para isto usou-se a função \textit{drop} que recebe como argumento o número de elementos que se quer retirar. Para além disso, tem que se dividir a lista resultante noutras subárvores. Para esta divisão, temos apenas que verificar quando é que um elemento não é antecedido por nenhum espaço, 
+ou seja, não está indentado, isto porque estes elementos correspondem às raízes de cada subárvore e, deste modo, devem ser colocados à cabeça das listas que serão convertidas em novas ávores de expressão. Assim, usamos a |groupBy| que faz uma partição da lista e coloca o respetivo elemento à cabeça da lista. Para a definição do predicado utilizamos uma expressão |lambda| com o comportamento anteriormente especificado.
 
 \noindent\underline{Função de pós-processamento |post|:}
 
@@ -1318,7 +1318,7 @@ gr2l = ((uncurry (:)) . (id >< concat))
 Primeiramente, são concatenadas as listas que resultam da chamada recursiva em cada uma das sub-árvores.
 Em seguida, acrescenta-se, à cabeça da lista criada, o quadrado da raiz da árvore.
 
-A função carpets recebe um inteiro (a profundidade da árvore) e calcula a lista das listas de Squares geradas, 
+A função |carpets| recebe um inteiro (a profundidade da árvore) e calcula a lista das listas de |Square| geradas, 
 tendo por base o quadrado original de canto inferior esquerdo em (0,0) e lado 32.
 Podemos definir o diagrama para esta operação da seguinte forma:
 
@@ -1368,10 +1368,10 @@ O diagrama que ilustra esta operação é o seguinte:
 }
 \end{eqnarray*}
 
-Assim, no caso da lista vazia, a função deveria usar a função unidade do monad IO (return). 
+Assim, no caso da lista vazia, a função deveria usar a função unidade do |monad| IO (|return|). 
 No caso de uma lista com pelo menos um elemento, esta deve imprimir esse elemento para o ecrã, fazendo o mesmo para cada um dos elementos da cauda.
 
-Podemos, no entanto, simplificar esta operação através do uso de um mmap, que percorre a lista, 
+Podemos, no entanto, simplificar esta operação através do uso de um |mmap|, que percorre a lista, 
 desenhando, primeiramente, o quadrado no ecrã e esperando depois 1 segundo por cada elemento
 
 \begin{code}
@@ -1432,8 +1432,8 @@ sendo que esta é a composição entre as funções
 
 \end{code}
 
-A função consolidate' recebe uma lista de pares (Team, Int), representando a pontuação de cada equipa em cada jogo do grupo e 
-devolve uma lista de pares (Team, Int) em que o inteiro representa a pontuação acumulada pela equipa no final de todos os jogos da fase de grupos.
+A função |consolidate'| recebe uma lista de pares |(Team, Int)|, representando a pontuação de cada equipa em cada jogo do grupo e 
+devolve uma lista de pares |(Team, Int)| em que o inteiro representa a pontuação acumulada pela equipa no final de todos os jogos da fase de grupos.
 
 \begin{code}
 consolidate' :: (Eq a, Num b) => [(a, b)] -> [(a, b)]
@@ -1457,7 +1457,7 @@ Podemos representar esta função através do seguinte diagrama:
 }
 \end{eqnarray*}
 
-A função acrescPoints tem o seguinte tipo:
+A função |acrescPoints| tem o seguinte tipo:
 
 \begin{code}
 acrescPoints :: (Eq a, Num b) => (a,b) -> [(a,b)] -> [(a,b)]
@@ -1528,8 +1528,8 @@ pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) 
 \end{eqnarray*}
 
 Quanto à função |matchResult|, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
-Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável result.
-Depois, aplicamos a função |matchResultAux| que, a partir do resultado do jogo, Nothing ou Just Equipa, devolve os pontos de cada equipa.
+Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável |result|.
+Depois, aplicamos a função |matchResultAux| que, a partir do resultado do jogo, |Nothing| ou |Just| Equipa, devolve os pontos de cada equipa.
 
 \begin{code}
 
@@ -1552,8 +1552,8 @@ pinitKnockoutStage :: [[Team]] -> Dist (LTree Team)
 \end{code}
 
 É importante lembrar que o resultado da função |psimulateGroupStage| é uma distribuição de listas.
-No entanto, o conceito de monad e, em particular o de bind, torna possível, através do uso do operador de composição de kleisli 
-que esta função receba o tipo [[Team]].
+No entanto, o conceito de |monad| e, em particular o de bind, torna possível, através do uso do operador de composição de kleisli 
+que esta função receba o tipo |[[Team]]|.
 
 \begin{code}
 pinitKnockoutStage l = let ltree = initKnockoutStage l
@@ -1586,8 +1586,8 @@ pgroupWinners :: (Match -> Dist (Maybe Team)) -> [Match] -> Dist [Team]
 pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResult pgsCriteria ) 
 \end{code}
 
-Começamos, por isso, por aplicar a função |pmatchResult| com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no monad das distribuições,
-com o |map| monádico. Por fim, dentro do monad, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
+Começamos, por isso, por aplicar a função |pmatchResult| com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no |monad| das distribuições,
+com o |map| monádico. Por fim, dentro do |monad|, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
 
 
 %----------------- Índice remissivo (exige makeindex) -------------------------%
