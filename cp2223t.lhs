@@ -1180,24 +1180,28 @@ initial = ((1,1),0)
 wrap = p2
 \end{code}
 
-Realizando alguns testes de comparação entre o desempenho das duas funções para o cálculo da sequência, verificamos que fbl é, de facto, muito mais eficiente que f.
-Por exemplo, como visualizamos na \ref{fig1}, para n=26, o tempo de f é, na máquina onde foi realizado o teste, aproximadamente, 4.41 segundos. Na \ref{fig2}, para n=27, o tempo aumenta para 7.47 seegundos. E assim sucessivamente.
-Concluímos assim que o tempo de execução da função f é exponencial. Já a função fbl apresenta um desempenho constante, mesmo para valores de input maiores. 
-Por exemplo, para n=26, o tempo de execução de fbl é, aproximadamente, 0.01 segundos. Apenas quando aumentamos o valor de n para valores realmente grandes (como 100000) é que fbl começa
-a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execução foi de 1.96 segundos.
+Para realizar alguns testes de comparação entre o desempenho das duas funções para o cálculo da sequência, utilizamos o seguinte comando do GHCi:
+|:set +s|.
+
+Pelas figuras \ref{fig6} e \ref{fig7} verificamos que |fbl| é, de facto, muito mais eficiente que |f|.
+Por exemplo, para |n=26|, o tempo de |f| é, na máquina onde foi realizado o teste, aproximadamente, |4.41| segundos. Para |n=27|, o tempo aumenta para |7.47| segundos. Concluímos assim que o tempo de execução da função |f| é exponencial.
+
+Já a função |fbl| apresenta um desempenho constante, mesmo para valores de input maiores. 
+Por exemplo, para |n=26| e |n=27|, o tempo de execução de |fbl| é, aproximadamente, |0.01| segundos. Apenas quando aumentamos o valor de |n| para valores realmente grandes (como |100000|) é que |fbl| começa
+a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execução foi de |1.96| segundos.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\textwidth]{cp2223t_media/f26.png}
-  \caption{Desempenho das funções para n=26.}
-  \label{fig1}
+  \includegraphics[width=0.4\textwidth]{cp2223t_media/f26.png}
+  \caption{Desempenho das funções para |n=26|.}
+  \label{fig6}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\textwidth]{cp2223t_media/f27.png}
-  \caption{Desempenho das funções para n=27.}
-  \label{fig2}
+  \includegraphics[width=0.4\textwidth]{cp2223t_media/f27.png}
+  \caption{Desempenho das funções para |n=27|.}
+  \label{fig7}
 \end{figure}
 
 \subsection*{Problema 2}
