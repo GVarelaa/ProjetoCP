@@ -1216,14 +1216,10 @@ a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execu
 gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 \end{code}
 
-<<<<<<< HEAD
-=======
 %A func ̧a ̃o gene vai ser expressa em func ̧a ̃o do seu caso base e caso geral. De notar que, se aplicarmos o funtor das listas na ̃o vazias (out) ao argumento da func ̧a ̃o, podemos definir o gene como uma soma de func ̧o ̃es.
 %O lado esquerdo da soma - correspondente ao caso de paragem - sera ́ a identidade. Isto porque, caso a lista seja singular, pretende devolver-se esse elemento, que sera ́ uma folha na a ́rvore de ex- pressa ̃o.
 %Oladodireitodasomae ́,comoja ́temsidoha ́bito,bastantemaiscomplexo.Comosedevetratarde uma func ̧a ̃o que recebe e devolve pares, vamos exprimi-la como um produto de outras duas func ̧o ̃es. O fator do lado esquerdo deve ser, mais uma vez, a identidade, visto que se pretende preservar o elemento a` cabec ̧a da lista no nodo atual da a ́rvore. O fator do lado direito deve ser uma func ̧a ̃o que, dada a cauda da lista, remova 4 espac ̧os a todos os elementos (visto que estes elementos sera ̃o filhos naa ́rvore,todososelementosdalistasera ̃ostringsquecomec ̧amcom,pelomenos,4espac ̧os),eparta a lista resultante por suba ́rvores a explorar recursivamente. Como se faz esta divisa ̃o? Simplesmente parte-se a lista sempre que ha ́ um elemento que na ̃o esta ́ identado. Porqueˆ nesses elementos? Porque esses elementos constituem as ra ́ızes das suba ́rvores e, por isso, devem ser a cabec ̧a das listas que sera ̃o recursivamente convertidas em a ́rvores.
 %Deste modo, comec ̧a-se por um map trim a` lista inicial. A func ̧a ̃o trim remove os primeiros quatro espac ̧os de uma string. De seguida, essa func ̧a ̃o e ́ composta com um groupBy (const canTrim)14. A func ̧a ̃o groupBy esta ́ definida no mo ́dulo de Haskell Data.List e parte uma lista sempre que a func ̧a ̃o argumento seja verdadeiro, colocando o elemento para o qual isso aconteceu a` cabec ̧a de uma nova lista.
-
->>>>>>> 0b7f0d06445ead861cc08aad1249855d8567ab6a
 
 \begin{eqnarray*}
 \xymatrix{
@@ -1390,11 +1386,11 @@ present = mmap presentaux
 \subsection*{Problema 4}
 \subsubsection*{Versão não probabilística}
 
-A função |initKnockoutStage| serve-se da função |arrangement| e de um anamorfismo de gene |glt|
+A função |initKnockoutStage| serve-se da função |arrangement| e de um anamorfismo de gene |glt|.
 A função tem como propósito criar a |LTree| de equipas para a fase a eliminar.
 O gene é a composição do |out| das listas com pelo menos 1 elemento com duas funções. 
-A primeira (|id + (uncurry (:))|), junta novamente a cabeça à cauda, formando a lista original.
-Em seguida, a função |id + split (leftSide) (rightSide)|, separa a lista em duas partes, a parte da esquerda, e a parte da direita.
+A primeira, (|id + (uncurry (:))|), junta novamente a cabeça à cauda, formando a lista original.
+Em seguida, a função |id + split (leftSide) (rightSide)| separa a lista em duas partes - a parte da esquerda e a parte da direita.
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
@@ -1423,7 +1419,10 @@ glt = (id -|- (split (leftSide) (rightSide))) . (id -|- (uncurry (:))) . out
         rightSide = ( (uncurry drop) . ((`div` 2) >< id) . (split (length) id))
 \end{code}
 
-Partindo do tipo da função simulateGroupStage, podemos inferir que a função groupWinner terá a seguinte assinatura:
+Nesta implementação, utilizamos o |out| das listas com pelo menos um elemento (e o respetivo tipo), uma vez que nos permite, 
+com mais facilidade, definir a função |glt|.
+
+Partindo do tipo da função |simulateGroupStage|, podemos inferir que a função |groupWinner| terá a seguinte assinatura:
 
 \begin{code}
 \end{code}
@@ -1488,41 +1487,11 @@ cgene :: (Eq a1, Num b) => Either a2 ((a1, b), [(a1, b)]) -> [(a1, b)]
 cgene = (either (nil) (uncurry acrescPoints))
 \end{code}
 
-A função pairup é responsável pelo emparelhamento das equipas em cada um dos grupos. 
+A função |pairup| é responsável pelo emparelhamento das equipas em cada um dos grupos. 
 Assim, esta função recebe como parâmetro a lista das equipas do grupo e devolve como resultado
 a lista dos jogos a realizar.
 
-Numa primeira abordagem, o nosso grupo seguiu o método tradicional de recursividade fornecido pelo Haskell,
-implementando a função da seguinte forma:
-
-\begin{code}
-
-pairup' :: Eq b => [b] -> [(b, b)]
-pairup' [] = []
-pairup' (x:xs) = aux2 x xs ++ pairup' xs
-              
-aux a [] = []
-aux a (x:xs) = (a,x) : aux a xs
-
-pair a b = (a,b)
-
-aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
-
-pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
-
-\end{code}
-
-\begin{eqnarray*}
-\xymatrix{
-  |Team| \times |Team|^*\ar[d]_{| split id p2|} \\
-  (|Team|^* \times |Team|) \times |Team|^*\ar[d]_{|split (length >< id) p2 >< id|} \\
-  ((|Int| \times |Team|) \times |Team|^*) \times |Team|^*\ar[d]_{|((uncurry replicate) >< id) >< id|} \\
-  (|Team|^* \times |Team|^*) \times |Team|^*\ar[d]_{|(uncurry zip) >< id|} \\
-  (|Team| \times |Team|)^* \times |Team|^*
-}
-\end{eqnarray*}
-
-Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o seguinte diagrama:
+Resolvemos pensar na função como anamorfismo de listas, elaborando o seguinte diagrama:
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
@@ -1548,6 +1517,16 @@ Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o s
 pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
 
 \end{code}
+
+\begin{eqnarray*}
+\xymatrix{
+  |Team| \times |Team|^*\ar[d]_{| split id p2|} \\
+  (|Team|^* \times |Team|) \times |Team|^*\ar[d]_{|split (length >< id) p2 >< id|} \\
+  ((|Int| \times |Team|) \times |Team|^*) \times |Team|^*\ar[d]_{|((uncurry replicate) >< id) >< id|} \\
+  (|Team|^* \times |Team|^*) \times |Team|^*\ar[d]_{|(uncurry zip) >< id|} \\
+  (|Team| \times |Team|)^* \times |Team|^*
+}
+\end{eqnarray*}
 
 Quanto à função |matchResult|, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
 Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável result.
