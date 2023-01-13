@@ -1389,7 +1389,9 @@ present = mmap presentaux
 
 A função |initKnockoutStage| serve-se da função |arrangement| e de um anamorfismo de gene |glt|
 A função tem como propósito criar a |LTree| de equipas para a fase a eliminar.
-O gene é a composição do |out| das listas com duas funções. A primeira 
+O gene é a composição do |out| das listas com pelo menos 1 elemento com duas funções. 
+A primeira (|id + (uncurry (:))|), junta novamente a cabeça à cauda, formando a lista original.
+Em seguida, a função |id + split (leftSide) (rightSide)|, separa a lista em duas partes, a parte da esquerda, e a parte da direita.
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
