@@ -1115,37 +1115,19 @@ simples e elegantes.
 No problema 1, é nos pedido para definir, tendo em conta a recursividade mútua, a seguinte função |f|.
 
 | f a b c 0 = 0 |
+
 | f a b c 1 = 1 |
+
 | f a b c 2 = 1 |
+
 | f a b c (n+3) = a * f a b c (n+2) + b * f a b c (n+1) + c * f a b c n |
+
 
 Para tal, utilizamos duas funções auxiliares |f'| e |f''|, em que |f' a b c n = f a b c (n+2)| e |f'' a b c n = f a b c (n+1)|.
 
+
 Como resultado das várias substituições, obtivemos o seguinte sistema:
-
-\begin{eqnarray*}
-\start
-  \begin{cases}
-     |lcbr(
-          f a b c 0 = 0
-     )(
-          f a b c (n+1) = f' a b c n
-     )|
-     \\
-     |lcbr(
-          f' a b c 0 = 1
-     )(
-          f' a b c (n+1) = f'' a b c n
-     )|
-     \\
-     |lcbr(
-          f'' a b c 0 = 1
-     )(
-          f'' a b c (n+1) = a * f'' a b c n + b * f' a b c n + c * f a b c n
-     )|
-  \end{cases}
-\end{eqnarray*}
-
+\vspace{-0.2cm}
 \begin{eqnarray*}
 \start
   \begin{cases}
@@ -1196,7 +1178,7 @@ Podemos definir então o sistema:
 
 | f = p2 . (for (split (split (aux) (p1.p1)) (p2.p1)) (((1,1),0))) |
 
-Funções auxiliares pedidas:
+\textbf{Funções auxiliares pedidas:}
 \begin{code}
 loop a b c = (split (split (aux a b c) (p1.p1)) (p2.p1))
      where aux a b c = (uncurry (+)) . ( (  (uncurry (+)) . ((a*) >< (b*))  ) >< (c*) )
@@ -1229,7 +1211,7 @@ a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execu
 \end{figure}
 
 \subsection*{Problema 2}
-Gene de |tax|:
+\textbf{Gene de |tax|:}
 \begin{code}
 gene = (id -|- (id >< group')) . out
 
@@ -1245,7 +1227,7 @@ group' = groupBy (\x y -> head y == ' ') . map (drop 4)
 \end{eqnarray*}
 
 
-\noindent Função de pós-processamento |post|: 
+\noindent\textbf{Função de pós-processamento |post|:}
 
 A função |post| tem a seguinte assinatura |post :: [Exp String String] -> [[String]]|, ou seja, vai transformar uma árvore de expressão numa lista de listas de |String|.
 Como tal, vimos a necessidade de recorrer ao catamorfismo desta estrutura (árvore de expressão).
