@@ -1373,41 +1373,26 @@ present = mmap presentaux
 
 \subsection*{Problema 4}
 \subsubsection*{Versão não probabilística}
-Sabendo que 
-\begin{code}
--- simulateGroupStage :: [[Match]] -> [[Team]]
-\end{code}
-podemos definir o tipo de initKnockoutStage:
-\begin{code}
-initKnockoutStage :: [[Team]] -> LTree Team
-\end{code}
 
-Como 
-\begin{code} 
-arrangement :: [[Team]] -> [Team]
-\end{code}
-concluímos que 
-\begin{code}
--- (anaLTree glt) :: [Team] -> LTree Team
-\end{code}
-
-Definimos, por isso, o seguinte diagrama:
+A função |initKnockoutStage| serve-se da função |arrangement| e de um anamorfismo de gene |glt|
+A função tem como propósito criar a |LTree| de equipas para a fase a eliminar.
+O gene é a composição do |out| das listas com duas funções. A primeira 
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
-    |Team|^*
+    |Team|^+
            \ar[d]_-{|anaLTree glt|}
            \ar[r]_-{out}
 &
-    |Team| \times |Team|^*
+    |Team| + |Team| |><| |Team|^+
            \ar[r]_{\cdots}
 &   
-  |Team| \times (|Team|^*)^*
+  |Team| + ((|Team|)^+)^2
             \ar[d]^{id \times |anaLTree glt|}
 \\
     |LTree Team|
 & &
-    |Team| \times (|LTree Team|)^*
+    |Team| + (|LTree Team|)^2
            \ar[ll]^-{|in|}
 }
 \end{eqnarray*}
@@ -1474,39 +1459,18 @@ acrescPoints (t,points) ((t2, points2):xs) = if t == t2 then (t2, points+points2
 Definimos, assim, a função consolidate' como um catamorfimos de listas:
 
 \begin{code}
-consolidate' = cataList (either (nil) (uncurry acrescPoints))
+consolidate' = cataList (cgene)
 \end{code}
 
 Gene de |consolidate'|:
 \begin{code}
-cgene = undefined
+cgene :: (Eq a1, Num b) => Either a2 ((a1, b), [(a1, b)]) -> [(a1, b)]
+cgene = (either (nil) (uncurry acrescPoints))
 \end{code}
 
 A função pairup é responsável pelo emparelhamento das equipas em cada um dos grupos. 
 Assim, esta função recebe como parâmetro a lista das equipas do grupo e devolve como resultado
 a lista dos jogos a realizar.
-
-Numa primeira abordagem, o nosso grupo seguiu o método tradicional de recursividade fornecido pelo Haskell,
-implementando a função da seguinte forma:
-
-\begin{code}
-
-pairup' :: Eq b => [b] -> [(b, b)]
-pairup' [] = []
-pairup' (x:xs) = aux2 x xs ++ pairup' xs
-              
-aux a [] = []
-aux a (x:xs) = (a,x) : aux a xs
-
-pair a b = (a,b)
-
-aux2 a = cataList $ either (nil) $ (uncurry (:)) . ((pair a) >< id)
-
-pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
-
-\end{code}
-
-Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o seguinte diagrama:
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
@@ -1520,12 +1484,20 @@ Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o s
     1 + (|Team| |><| |Team|)^* |><| |Team|^*
            \ar[d]_{id + id |><| |pairup|}
 \\
-    (|Team| |><| |Nat0|)^*
+    ((|Team| |><| |Team|)^*)^*
 & &
-    1 + (|Team| |><| |Nat0|) |><| (|Team| |><| |Nat0|)^*
-           \ar[ll]^-{|either nil acrescPoints|}
+    1 + (|Team| |><| |Team|)^* |><| ((|Team| |><| |Team|)^*)^*
+           \ar[ll]^-{|in|}
 }
 \end{eqnarray*}
+
+\begin{code}
+
+pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) >< id) . ((split (length >< id) p1) >< id) . (split swap p2))) . outList)
+
+\end{code}
+
+
 
 Quanto à função matchResult, esta é responsável por calcular o resultado de um jogo, devolvendo os pontos obtidos por cada equipa no final do jogo.
 Assim, começamos por aplicar o critério não probabilístico ao jogo, guardando o resultado numa variável result.
