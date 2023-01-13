@@ -1216,11 +1216,6 @@ a apresentar tempos de execução mais elevados. Nesse exemplo, o tempo de execu
 gene = (id -|- (id >< groupBy (\x y -> head y == ' ') . map (drop 4))) . out
 \end{code}
 
-A func ̧a ̃o gene vai ser expressa em func ̧a ̃o do seu caso base e caso geral. De notar que, se aplicarmos o funtor das listas na ̃o vazias (out) ao argumento da func ̧a ̃o, podemos definir o gene como uma soma de func ̧o ̃es.
-O lado esquerdo da soma - correspondente ao caso de paragem - sera ́ a identidade. Isto porque, caso a lista seja singular, pretende devolver-se esse elemento, que sera ́ uma folha na a ́rvore de ex- pressa ̃o.
-Oladodireitodasomae ́,comoja ́temsidoha ́bito,bastantemaiscomplexo.Comosedevetratarde uma func ̧a ̃o que recebe e devolve pares, vamos exprimi-la como um produto de outras duas func ̧o ̃es. O fator do lado esquerdo deve ser, mais uma vez, a identidade, visto que se pretende preservar o elemento a` cabec ̧a da lista no nodo atual da a ́rvore. O fator do lado direito deve ser uma func ̧a ̃o que, dada a cauda da lista, remova 4 espac ̧os a todos os elementos (visto que estes elementos sera ̃o filhos naa ́rvore,todososelementosdalistasera ̃ostringsquecomec ̧amcom,pelomenos,4espac ̧os),eparta a lista resultante por suba ́rvores a explorar recursivamente. Como se faz esta divisa ̃o? Simplesmente parte-se a lista sempre que ha ́ um elemento que na ̃o esta ́ identado. Porqueˆ nesses elementos? Porque esses elementos constituem as ra ́ızes das suba ́rvores e, por isso, devem ser a cabec ̧a das listas que sera ̃o recursivamente convertidas em a ́rvores.
-Deste modo, comec ̧a-se por um map trim a` lista inicial. A func ̧a ̃o trim remove os primeiros quatro espac ̧os de uma string. De seguida, essa func ̧a ̃o e ́ composta com um groupBy (const canTrim)14. A func ̧a ̃o groupBy esta ́ definida no mo ́dulo de Haskell Data.List e parte uma lista sempre que a func ̧a ̃o argumento seja verdadeiro, colocando o elemento para o qual isso aconteceu a` cabec ̧a de uma nova lista.
-
 
 \begin{eqnarray*}
 \xymatrix{
@@ -1519,6 +1514,16 @@ pairup = anaList ((id -|- (((uncurry zip) >< id) . (((uncurry replicate) >< id) 
 
 \end{code}
 
+\begin{eqnarray*}
+\xymatrix{
+  |Team| \times |Team|^*\ar[d]_{| split id p2|} \\
+  (|Team|^* \times |Team|) \times |Team|^*\ar[d]_{|split (length >< id) p2 >< id|} \\
+  ((|Int| \times |Team|) \times |Team|^*) \times |Team|^*\ar[d]_{|((uncurry replicate) >< id) >< id|} \\
+  (|Team|^* \times |Team|^*) \times |Team|^*\ar[d]_{|(uncurry zip) >< id|} \\
+  (|Team| \times |Team|)^* \times |Team|^*
+}
+\end{eqnarray*}
+
 Depois, resolvemos pensar na função como anamorfismo de listas, elaborando o seguinte diagrama:
 
 \begin{eqnarray*}
@@ -1602,6 +1607,7 @@ pgroupWinners criteria = fmap (best 2 . consolidate . concat) . mmap (pmatchResu
 
 Começamos, por isso, por aplicar a função pmatchResult com o critério pgsCriteria a cada um dos elementos da lista de jogos, acumulando o resultado no monad das distribuições,
 com o map monádico. Por fim, dentro do monad, concatenamos as listas obtidas, acumulamos os pontos de cada equipa e retiramos as 2 melhores equipas do grupo.
+
 
 %----------------- Índice remissivo (exige makeindex) -------------------------%
 
